@@ -1,27 +1,33 @@
 # CryptoCurrencyAdvertisement
 
-# Command
-init python vertual env
+# Setup initialize commands
+install pipenv
 ```
-python3 -m venv CryptoCurrencyAdvertisement
+brew install pipenv
 ```
-start virtual env
+OR
 ```
-source CryptoCurrencyAdvertisement/bin/activate
+pip3 install pipenv
 ```
+
+install packages
+```
+pipenv install
+```
+
 upgrade pip
 ```
 python3 -m pip install --upgrade pip
 ```
 install django
 ```
-pip3 install django
+pipenv install django
 ```
 if update django
 ```
-pip3 install django -U
+pipenv update django
 ```
-init django
+init django(create project)
 ```
 django-admin startproject cca
 ```
@@ -29,6 +35,8 @@ run django server
 ```
 python3 manage.py runserver
 ```
+
+# Setup MySQL database commands
 migrate django
 ```
 python3 manage.py migrate
@@ -36,7 +44,7 @@ python3 manage.py migrate
 use and connect mysql
 install PyMySQL
 ```
-pip3 install PyMySQL
+pipenv install PyMySQL
 ```
 and edit settings.py like this
 ```python
@@ -59,4 +67,39 @@ pymysql.install_as_MySQLdb()
 check the django can connect mysql and migrate.
 ```
 python3 manage.py migrate
+```
+
+# Setup Application(Controllers and views and models)
+create apps(It is controller and view and models)
+```
+python3 manage.py startapp adnem
+```
+edit adnem/views.py like this.(This is a controller)
+```
+from django.http import HttpResponse
+
+def index(request):
+  return HttpResponse("Hello, world. You're at the polls index.")
+```
+
+edit adnem/urls.py like this.(This is a routing)
+```
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+]
+```
+
+edit cca/urls like this.(This is a project routing)
+```
+from django.contrib import admin
+from django.urls import include, path
+
+urlpatterns = [
+    path('adnem/', include('adnem.urls')),
+    path('admin/', admin.site.urls),
+]
 ```
