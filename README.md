@@ -69,8 +69,8 @@ check the django can connect mysql and migrate.
 python3 manage.py migrate
 ```
 
-# Setup Application(Controllers and views and models)
-create apps(It is controller and view and models)
+# Setup Application(Controllers and views)
+create apps(It is controller and view)
 ```
 python3 manage.py startapp adnem
 ```
@@ -102,4 +102,27 @@ urlpatterns = [
     path('adnem/', include('adnem.urls')),
     path('admin/', admin.site.urls),
 ]
+```
+
+# Setup and controll database migration
+
+Create migration file from the models.
+```
+python3 manage.py makemigrations adnem
+```
+If you want to change table configuration, you edit this file made by above.
+
+Migrate only application and version.
+```
+python3 manage.py sqlmigrate adnem 0001
+```
+
+Migrate all tables
+```
+python3 manage.py migrate
+```
+
+Drop all tables.
+```
+python3 manage.py migrate adnem zero
 ```
