@@ -8,6 +8,13 @@ class User(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['uid']),
+            models.Index(fields=['email_address']),
+            models.Index(fields=['last_login_at'])
+        ]
+
 # 広告掲載先
 class Publisher(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
@@ -16,6 +23,12 @@ class Publisher(models.Model):
     activate_state = models.IntegerField(null=False, blank=False, default=0)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user_id']),
+            models.Index(fields=['host'])
+        ]
 
 class Account(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
@@ -27,6 +40,12 @@ class Account(models.Model):
     options = models.TextField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user_id', 'type']),
+            models.Index(fields=['uid'])
+        ]
 
 # 通貨
 class Currency(models.Model):
@@ -43,19 +62,32 @@ class Wallet(models.Model):
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user_id']),
+            models.Index(fields=['address'])
+        ]
+
 # 広告関係とは無関係の送金出金履歴
 class PaymentLog(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=False, blank=False)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True, blank=True)
     transaction_id = models.CharField(max_length=255, null=True, blank=True)
     to_address = models.CharField(max_length=255, null=False, blank=False)
-    from_adress = models.CharField(max_length=255, null=False, blank=False)
+    from_address = models.CharField(max_length=255, null=False, blank=False)
     from_amount = models.FloatField(null=False, blank=False, default=0)
     to_amount = models.FloatField(null=False, blank=False, default=0)
     fee_amount = models.FloatField(null=False, blank=False, default=0)
     transaction_state = models.IntegerField(null=False, blank=False, default=0)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['wallet_id']),
+            models.Index(fields=['from_address']),
+            models.Index(fields=['to_address'])
+        ]
 
 # 広告掲載情報(ユーザー登録していなくてもいい)
 class AdvertisementDraft(models.Model):
@@ -65,6 +97,11 @@ class AdvertisementDraft(models.Model):
     banner_url = models.CharField(max_length=255, null=True, blank=True)
     options = models.TextField(null=True, blank=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['user_id'])
+        ]
+
 # 広告枠
 class Inventory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
@@ -73,6 +110,12 @@ class Inventory(models.Model):
     activate_advertisement_count = models.IntegerField(null=False, blank=False, default=0)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['user_id']),
+            models.Index(fields=['uuid'])
+        ]
 
 # 広告
 class Advertisement(models.Model):
@@ -84,10 +127,16 @@ class Advertisement(models.Model):
     sum_price = models.FloatField(null=False, blank=False, default=0)
     start_at = models.DateTimeField(null=False, blank=False)
     end_at = models.DateTimeField(null=False, blank=False)
-    show_order = models.IntegerField(null=False, blank=False, default=0)
     activate_state = models.IntegerField(null=False, blank=False, default=0)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['inventory_id', 'start_at', 'end_at']),
+            models.Index(fields=['daily_price']),
+            models.Index(fields=['uuid'])
+        ]
 
 # 広告効果KPI
 class AdvertisementLog(models.Model):
@@ -103,6 +152,14 @@ class AdvertisementLog(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['inventory_id']),
+            models.Index(fields=['advertisement_id']),
+            models.Index(fields=['publisher_id']),
+            models.Index(fields=['created_at'])
+        ]
+
 # 広告出稿とかの送出金履歴
 class AdvertisementPaymentLog(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=False, blank=False)
@@ -110,10 +167,16 @@ class AdvertisementPaymentLog(models.Model):
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, null=False, blank=False)
     transaction_id = models.CharField(max_length=255, null=True, blank=True)
     to_address = models.CharField(max_length=255, null=False, blank=False)
-    from_adress = models.CharField(max_length=255, null=False, blank=False)
+    from_address = models.CharField(max_length=255, null=False, blank=False)
     from_amount = models.FloatField(null=False, blank=False, default=0)
     to_amount = models.FloatField(null=False, blank=False, default=0)
     fee_amount = models.FloatField(null=False, blank=False, default=0)
     transaction_state = models.IntegerField(null=False, blank=False, default=0)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['advertisement_id']),
+            models.Index(fields=['to_address'])
+        ]
