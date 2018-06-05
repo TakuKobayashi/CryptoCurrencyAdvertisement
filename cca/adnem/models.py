@@ -47,15 +47,11 @@ class Account(models.Model):
             models.Index(fields=['uid'])
         ]
 
-# 通貨
-class Currency(models.Model):
-    unit = models.CharField(max_length=32, null=False, blank=False)
-    name = models.CharField(max_length=32, null=False, blank=False)
-
 # 通貨を受け取るお財布
 class Wallet(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=False, blank=False)
+    currency_unit = models.CharField(max_length=32, null=False, blank=False)
+    currency_name = models.CharField(max_length=32, null=False, blank=False)
     address = models.CharField(max_length=255, null=False, blank=False)
     amount = models.FloatField(null=False, blank=False, default=0)
     options = models.TextField(null=True, blank=True)
@@ -70,7 +66,8 @@ class Wallet(models.Model):
 
 # 広告関係とは無関係の送金出金履歴
 class PaymentLog(models.Model):
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=False, blank=False)
+    currency_unit = models.CharField(max_length=32, null=False, blank=False)
+    currency_name = models.CharField(max_length=32, null=False, blank=False)
     wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=True, blank=True)
     transaction_id = models.CharField(max_length=255, null=True, blank=True)
     to_address = models.CharField(max_length=255, null=False, blank=False)
@@ -120,8 +117,8 @@ class Inventory(models.Model):
 # 広告
 class Advertisement(models.Model):
     inventory = models.ForeignKey(Inventory, on_delete=models.CASCADE, null=False, blank=False)
-    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, null=False, blank=False)
-    draft = models.ForeignKey(AdvertisementDraft, on_delete=models.CASCADE, null=False, blank=False)
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, null=False, blank=False, db_index=False)
+    draft = models.ForeignKey(AdvertisementDraft, on_delete=models.CASCADE, null=False, blank=False, db_index=False)
     uuid = models.CharField(max_length=255, null=False, blank=False)
     daily_price = models.FloatField(null=False, blank=False, default=0)
     sum_price = models.FloatField(null=False, blank=False, default=0)
@@ -162,8 +159,9 @@ class AdvertisementLog(models.Model):
 
 # 広告出稿とかの送出金履歴
 class AdvertisementPaymentLog(models.Model):
-    currency = models.ForeignKey(Currency, on_delete=models.CASCADE, null=False, blank=False)
-    to_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=False, blank=False)
+    currency_unit = models.CharField(max_length=32, null=False, blank=False)
+    currency_name = models.CharField(max_length=32, null=False, blank=False)
+    to_wallet = models.ForeignKey(Wallet, on_delete=models.CASCADE, null=False, blank=False, db_index=False)
     advertisement = models.ForeignKey(Advertisement, on_delete=models.CASCADE, null=False, blank=False)
     transaction_id = models.CharField(max_length=255, null=True, blank=True)
     to_address = models.CharField(max_length=255, null=False, blank=False)
