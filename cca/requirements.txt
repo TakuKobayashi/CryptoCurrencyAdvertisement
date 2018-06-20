@@ -1,2 +1,0 @@
-django==2.0.5
-PyMySQL==0.8.1
