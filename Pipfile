@@ -9,6 +9,7 @@ pymysql = "*"
 nem-python = "*"
 python-dotenv = "*"
 uwsgi = "*"
+websocket-server = "*"
 
 [dev-packages]
 
